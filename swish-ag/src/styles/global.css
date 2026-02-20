@@ -1,0 +1,100 @@
+@import url("https://fonts.googleapis.com/css2?family=Brawler:wght@400;700&family=DM+Serif+Text:ital@0;1&family=League+Gothic&display=swap");
+
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "League Gothic", sans-serif;
+  --font-display: "Brawler", serif;
+  --font-mono: "DM Serif Text", sans-serif;
+}
+
+@layer components {
+  .header {
+    @apply w-full bg-[#121212] fixed top-0 left-0 right-0 z-50;
+  }
+
+  .header.scrolled {
+    @apply border-b-2 border-[#444444];
+  }
+
+  .navbar {
+    @apply max-w-300 mx-auto flex justify-between items-center bg-[#121212];
+  }
+
+  .navbar-left {
+    @apply flex items-center gap-4;
+  }
+
+  .logo-img {
+    width: clamp(80px, 5vw, 100px);
+    height: auto;
+  }
+
+  .brand-text {
+    @apply flex flex-col justify-center py-6;
+  }
+
+  .brand-title {
+    @apply border-l border-[#cccccc] pl-6 -ml-6
+           font-sans font-bold text-[clamp(1rem,2vw,1.5rem)] text-[#F1F1F1] 
+           tracking-widest;
+  }
+
+  .brand-subtitle {
+    @apply border-l border-[#cccccc] pl-6 -ml-6 
+           font-display text-[clamp(0.40rem,2vw,0.75rem)] font-bold text-[#cccccc] 
+           tracking-widest;
+  }
+
+  .nav-menu {
+    @apply flex items-center gap-5 pr-2;
+  }
+
+  .nav-item {
+    @apply font-sans text-[clamp(1rem,2vw,1.25rem)] text-[#cccccc] 
+           tracking-wider cursor-pointer 
+           hover:text-white transition-colors;
+  }
+
+  .hamburger {
+    @apply flex lg:hidden flex-col justify-center gap-1.5 p-4 cursor-pointer;
+  }
+
+  .hamburger-line {
+    @apply block w-6 h-0.5 bg-[#cccccc];
+  }
+
+  .nav-menu {
+    @apply hidden lg:flex items-center gap-5;
+  }
+
+  .drawer-backdrop {
+    @apply fixed inset-0 z-60 bg-black/60 transition-opacity duration-300 lg:hidden pointer-events-none opacity-0;
+  }
+
+  .drawer-backdrop.open {
+    @apply opacity-100 pointer-events-auto;
+  }
+
+  .drawer {
+    @apply fixed top-0 right-0 h-full w-[clamp(14rem,6vw,16.25rem)] z-70 bg-[#121212] 
+           border-l border-[#444444] flex flex-col pt-8 px-8 gap-8 transition-transform 
+           duration-300 ease-in-out lg:hidden translate-x-full;
+  }
+
+  .drawer.open {
+    @apply translate-x-0;
+  }
+
+  .drawer-close {
+    @apply self-end text-[#cccccc] hover:text-white text-[clamp(1rem,2vw,1.25rem)] leading-none cursor-pointer bg-transparent border-none;
+  }
+
+  .drawer-nav {
+    @apply flex flex-col gap-6 justify-center;
+  }
+
+  .drawer-nav-item {
+    @apply font-sans text-[clamp(1rem,2vw,1.25rem)] text-[#cccccc] tracking-wider cursor-pointer hover:text-white transition-colors;
+  }
+}

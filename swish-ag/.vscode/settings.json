@@ -1,0 +1,10 @@
+{
+  "css.validate": false,
+  "scss.validate": false,
+  "tailwindCSS.includeLanguages": {
+    "astro": "html"
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
+  }
+}
