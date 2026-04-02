@@ -21,7 +21,7 @@ const SwishHeader = (): JSX.Element => {
 
     const navItems = [
     { label: "Spotlight", id: "spotlight" },    
-    { label: "Events", id: "events" },
+    { label: "News", id: "news" },
     { label: "About", id: "about" },
     { label: "Contact", id: "contact" },
     ];
@@ -31,7 +31,7 @@ const SwishHeader = (): JSX.Element => {
       <div className={`header ${scrolled ? "scrolled" : ""}`}>
         <div className="navbar">
           <div className="navbar-left">
-            <img src={logo.src} alt="Swish-AG Logo" className="logo-img" />
+           <img src={logo.src} alt="Swish-AG Logo" className="logo-img" />
             <div className="brand-text">
               <h2 className="brand-title">Swish-AG</h2>
               <p className="brand-subtitle">Stay Ahead of the Game.</p>

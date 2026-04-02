@@ -1,11 +1,23 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Landing from "../components/astrocomponents/landing.astro";
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import SwishSpotlight from "../components/reactcomponents/spolight.tsx";
+import SwishNews from "../components/reactcomponents/previewNews.tsx";
+import SwishAbout from "../components/reactcomponents/about.tsx";
+import SwishContact from "../components/reactcomponents/contact.tsx";
 ---
+
+// Welcome to Astro! Wondering what to do next? Check out the Astro
+documentation at https://docs.astro.build // Don't want to use any of this?
+Delete everything in this file, the `assets`, `components`, and `layouts`
+directories, and start fresh. ---
 
 <Layout>
   <Landing />
+  <div class="h-screen"></div>
+  <!-- this creates the scroll space -->
+  <SwishSpotlight client:load />
+  <SwishNews client:load />
+  <SwishAbout client:load />
+  <SwishContact client:load />
 </Layout>

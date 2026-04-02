@@ -1,9 +1,77 @@
-<footer>
-  <div
-    class="flex justify-center items-center py-4 min-h-[50vh] max-h-[80vh] bg-[#121212]"
-  >
-    <p class="text-sm text-[#cccccc] tracking-widest">
-      © 2024 Swish-AG. All rights reserved.
-    </p>
+---
+import BackToTop from "../reactcomponents/backToTop";
+---
+
+<footer class="swish-footer">
+  <div class="footer-container">
+    <!-- Left: Data Sources -->
+    <div class="footer-section">
+      <h3 class="footer-heading">Data Sources</h3>
+      <ul class="footer-links">
+        <li>
+          <a
+            href="https://www.nba.com"
+            target="_blank"
+            rel="noopener noreferrer">NBA</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://www.espn.com"
+            target="_blank"
+            rel="noopener noreferrer">ESPN</a
+          >
+        </li>
+      </ul>
+    </div>
+
+    <!-- Middle: Stack -->
+    <div class="footer-section footer-center">
+      <h3 class="footer-heading">Built With</h3>
+      <ul class="footer-links">
+        <li>
+          <a
+            href="https://astro.build"
+            target="_blank"
+            rel="noopener noreferrer">Astro</a
+          >
+        </li>
+        <li>
+          <a href="https://react.dev" target="_blank" rel="noopener noreferrer"
+            >React</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://tailwindcss.com"
+            target="_blank"
+            rel="noopener noreferrer">Tailwind CSS</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://www.emailjs.com"
+            target="_blank"
+            rel="noopener noreferrer">EmailJS</a
+          >
+        </li>
+      </ul>
+    </div>
+
+    <!-- Right: Logo -->
+    <div class="footer-section footer-right">
+      <img
+        src="/src/assets/swishlogo.png"
+        alt="Swish-AG Logo"
+        class="footer-logo"
+      />
+    </div>
   </div>
-</footer>z
+
+  <!-- Bottom Bar -->
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2026 Swish-AG. All rights reserved.</p>
+  </div>
+
+  <BackToTop client:load />
+</footer>
