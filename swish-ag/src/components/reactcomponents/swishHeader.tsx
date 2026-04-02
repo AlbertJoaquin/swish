@@ -1,5 +1,5 @@
 import type { JSX } from "react/jsx-dev-runtime";
-import logo from "/src/assets/swishlogo.png";
+import logo from "/src/assets/swishlogo.webp";
 import { useEffect, useState } from "react";
 
 const SwishHeader = (): JSX.Element => {
