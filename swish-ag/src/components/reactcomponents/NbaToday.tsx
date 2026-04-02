@@ -284,7 +284,7 @@ export default function NbaToday() {
               <button
                 key={offset}
                 onClick={() => setDayOffset(offset)}
-                className={`DayNba px-3 py-1 font-medium transition-all ${
+                className={`DayNba px-2 py-1 font-medium transition-all ${
                   dayOffset === offset
                     ? 'bg-[#db6163] text-white'
                     : 'bg-transparent text-[#8892a4] hover:text-[#db6163]'
