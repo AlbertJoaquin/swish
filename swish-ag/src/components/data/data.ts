@@ -1,9 +1,9 @@
-import coverage from "../assets/coverage.webp";
-import score from "../assets/score.webp";
-import stats from "../assets/stats.webp";
-import nba from "../assets/nba.webp";
-import espn from "../assets/espn.webp";
-import swishAbout from "../assets/swish-about.webp";
+import coverage from "../../assets/coverage.webp";
+import score from "../../assets/score.webp";
+import stats from "../../assets/stats.webp";
+import nba from "../../assets/nba.webp";
+import espn from "../../assets/espn.webp";
+import swishAbout from "../../assets/swish-about.webp";
 
 export const dashButtons = [
   {
