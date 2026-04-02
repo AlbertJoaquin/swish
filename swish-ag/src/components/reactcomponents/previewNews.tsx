@@ -142,7 +142,7 @@ const SwishNews = () => {
               rel="noopener noreferrer"
               style={{
               backgroundImage: `linear-gradient(to top, rgba(10,10,15,0.97) 40%, rgba(10,10,15,0.5) 100%), url(${
-                news[active]?.image ?? '/src/assets/espn.webp'
+                news[active]?.image ?? '../../assets/espn.webp'
               })`,
               backgroundSize: "cover",
               backgroundPosition: "center",
