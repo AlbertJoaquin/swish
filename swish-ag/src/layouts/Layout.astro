@@ -9,9 +9,57 @@ import SwishFooter from "../components/astrocomponents/swishFooter.astro";
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
+
+    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" href="/swishfavi.png" />
+
+    <!-- Primary SEO -->
+    <title>Swish-AG | NBA Scores, Schedules & News</title>
+    <meta
+      name="description"
+      content="Swish-AG provides live NBA scores, game schedules in Philippine Time, player stats, and the latest ESPN news — all in one place."
+    />
+    <meta
+      name="keywords"
+      content="NBA scores, NBA schedule, Philippine time, NBA stats, basketball news, ESPN, Swish-AG"
+    />
+    <meta name="author" content="Swish-AG" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph (Facebook, Discord, Messenger previews) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://swish-ag.vercel.app/" />
+    <meta
+      property="og:title"
+      content="Swish-AG | NBA Scores, Schedules & News"
+    />
+    <meta
+      property="og:description"
+      content="Live NBA scores, game schedules in Philippine Time, player stats, and the latest ESPN news — all in one place."
+    />
+    <meta
+      property="og:image"
+      content="https://swish-ag.vercel.app/swishfavi.png"
+    />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://swish-ag.vercel.app/" />
+    <meta
+      name="twitter:title"
+      content="Swish-AG | NBA Scores, Schedules & News"
+    />
+    <meta
+      name="twitter:description"
+      content="Live NBA scores, game schedules in Philippine Time, player stats, and the latest ESPN news."
+    />
+    <meta
+      name="twitter:image"
+      content="https://swish-ag.vercel.app/swishfavi.png"
+    />
+
     <meta name="generator" content={Astro.generator} />
-    <title>Swish-AG</title>
   </head>
   <body>
     <SwishHeader client:load />
