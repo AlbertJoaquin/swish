@@ -116,7 +116,6 @@ html {
 
   .container-landing {
     @apply flex flex-col justify-center items-center mx-auto max-w-300 mt-3;
-    @apply lg:mt-10;
 
     min-height: 100vh;
     padding-top: clamp(5rem, 7vh, 10rem);
@@ -139,7 +138,7 @@ html {
   }
 
   .landing-h1 span {
-    @apply text-[#cccccc] bg-[#472c2c] p-2 border-l-2 border-[#db6163] rounded-r-md;
+    @apply text-[#cccccc] bg-[#472c2c] py-1 px-2 border-l-2 border-[#db6163] rounded-r-md;
     font-size: clamp(2.5rem, 6vw + 1rem, 6rem);
   }
 
@@ -194,10 +193,10 @@ html {
   }
   .nba-title {
     @apply text-base font-medium text-[#cccccc] tracking-wide font-display;
-    font-size: clamp(1rem, 1.5vw + 0.75rem, 1.5rem);
+    font-size: clamp(0.8rem, 1.5vw + 0.75rem, 1.5rem);
   }
   .nba-refresh {
-    @apply bg-transparent border border-[#e63946] rounded-r-md px-3.5 py-2 text-[#cccccc] 
+    @apply bg-transparent border border-[#e63946] rounded-r-md px-2 py-2 text-[#cccccc] 
     text-xs cursor-pointer hover:not-only:bg-[#e63946] hover:text-white;
     border-width: 0.5px;
   }
