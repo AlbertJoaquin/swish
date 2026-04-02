@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import espnFallback from "../../assets/espn.webp";
 
 interface NewsItem {
   title: string;
@@ -142,7 +143,7 @@ const SwishNews = () => {
               rel="noopener noreferrer"
               style={{
               backgroundImage: `linear-gradient(to top, rgba(10,10,15,0.97) 40%, rgba(10,10,15,0.5) 100%), url(${
-                news[active]?.image ?? '../../assets/espn.webp'
+                news[active]?.image ?? espnFallback.src
               })`,
               backgroundSize: "cover",
               backgroundPosition: "center",
