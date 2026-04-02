@@ -115,15 +115,23 @@ html {
   }
 
   .container-landing {
-    @apply flex flex-col justify-center items-center mx-auto max-w-300 bg-no-repeat bg-bottom;
+    @apply flex flex-col justify-center items-center mx-auto max-w-300;
 
     min-height: 100vh;
     padding-top: clamp(5rem, 7vh, 9rem);
     padding-bottom: clamp(2rem, 5vh, 4rem);
 
-    background: linear-gradient(to right, transparent, #e03a3e, transparent)
-      bottom 60px center / 100% 2px no-repeat;
+    background-image: linear-gradient(
+      to right,
+      transparent,
+      #e03a3e,
+      transparent
+    );
+    background-position: bottom 60px center;
+    background-size: 100% 2px;
+    background-repeat: no-repeat;
   }
+
   .landing-h1 {
     @apply text-[#cccccc];
     font-size: clamp(2.5rem, 6vw + 1rem, 6rem);
@@ -324,8 +332,15 @@ html {
 
     .news-container {
       @apply flex flex-col mx-auto w-full max-w-340 px-6 pb-20;
-      background: linear-gradient(to right, transparent, #e03a3e, transparent)
-        bottom 10px center / 100% 2px no-repeat;
+      background-image: linear-gradient(
+        to right,
+        transparent,
+        #e03a3e,
+        transparent
+      );
+      background-position: bottom 10px center;
+      background-size: 100% 2px;
+      background-repeat: no-repeat;
     }
 
     .news-header {
