@@ -1,5 +1,6 @@
 ---
 import BackToTop from "../reactcomponents/backToTop";
+import { Image } from "astro:assets";
 import Swishlogo from "../../assets/swishlogo.webp";
 ---
 
@@ -61,7 +62,7 @@ import Swishlogo from "../../assets/swishlogo.webp";
 
     <!-- Right: Logo -->
     <div class="footer-section footer-right">
-      <img src={Swishlogo.src} alt="Swish-AG Logo" class="footer-logo" />
+      <Image src={Swishlogo} alt="Swish-AG Logo" class="footer-logo" />
     </div>
   </div>
 
