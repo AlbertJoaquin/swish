@@ -115,7 +115,7 @@ html {
   }
 
   .container-landing {
-    @apply flex flex-col justify-center items-center mx-auto max-w-300 mt-8;
+    @apply flex flex-col justify-center items-center mx-auto max-w-300 mt-5;
     @apply lg:mt-20;
 
     min-height: 100vh;
