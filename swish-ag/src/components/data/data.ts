@@ -24,7 +24,7 @@ export const dashButtons = [
       },
       { 
         title: "Player Stats", 
-        description: "Shows detailed player and team statistics, including points, rebounds, assists, and other key performance metrics. This section helps you better understand team performance, compare players, and gain deeper insights into how the game is being played.", 
+        description: "Shows detailed player statistics, including points, rebounds, assists, and other key performance metrics. This section helps you better understand individual performance, compare players, and gain deeper insights into how the game is being played.", 
         image: stats.src,
         alt: "First image description"
       },
@@ -56,7 +56,7 @@ export const dashButtons = [
     contents: [
       { 
         title: "Behind Swish-AG", 
-        description: "I built Swish-AG for my community and friends who love basketball. It enhances the usual NBA score experience by providing live scores, game schedules in Philippine Time (PHT), and the latest news from ESPN—all in one place, making the game easier and more enjoyable to follow.",
+        description: "Hi, I'm AJ, a 22-year-old 4th year BSIT student from Our Lady of Fatima University. I built Swish-AG for my community and friends who love basketball. It enhances the usual NBA score experience by providing live scores, game schedules in Philippine Time (PHT), and the latest news—all in one place. My goal is to make following the game easier and more enjoyable for everyone.",
         image: swishAbout.src,
         alt: "First image description"
       }

@@ -2,11 +2,7 @@ import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronUp } from "@fortawesome/free-solid-svg-icons";
 
-interface BackToTopProps {
-  isPanelOpen?: boolean;
-}
-
-const BackToTop = ({ isPanelOpen = false }: BackToTopProps) => {
+const BackToTop = () => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -25,7 +21,7 @@ const BackToTop = ({ isPanelOpen = false }: BackToTopProps) => {
   return (
     <button
       onClick={handleClick}
-      className={`back-to-top ${visible && !isPanelOpen ? "show" : ""}`}
+      className={`back-to-top ${visible ? "show" : ""}`}
       aria-label="Back to top"
     >
       <FontAwesomeIcon icon={faChevronUp} />

@@ -29,11 +29,15 @@ type Game = {
 type PlayerStat = {
   name: string;
   team: string;
+  min: string;
   pts: string;
   ast: string;
   reb: string;
   stl: string;
   blk: string;
+  fg: string;
+  threept: string;
+  ft: string;
 };
 
 function getDateStrForTab(tab: number) {
@@ -114,23 +118,33 @@ async function fetchPlayerStats(gameId: string): Promise<PlayerStat[]> {
     const teamAbbr = teamData?.team?.abbreviation || '';
     const statistics = teamData?.statistics?.[0];
     if (!statistics) continue;
+
     const labels: string[] = statistics.labels || [];
+
+    const minIdx = labels.indexOf('MIN');
     const ptsIdx = labels.indexOf('PTS');
     const astIdx = labels.indexOf('AST');
     const rebIdx = labels.indexOf('REB');
     const stlIdx = labels.indexOf('STL');
     const blkIdx = labels.indexOf('BLK');
+    const fgIdx = labels.indexOf('FG');
+    const threeptIdx = labels.indexOf('3PT');
+    const ftIdx = labels.indexOf('FT');
     for (const athlete of statistics.athletes || []) {
       const stats = athlete.stats || [];
       if (!stats.length) continue;
-      players.push({
-        name: athlete.athlete?.displayName || '',
+    players.push({
+  name: athlete.athlete?.displayName || '',
         team: teamAbbr,
+        min: minIdx >= 0 ? stats[minIdx] : '0',
         pts: ptsIdx >= 0 ? stats[ptsIdx] : '0',
         ast: astIdx >= 0 ? stats[astIdx] : '0',
         reb: rebIdx >= 0 ? stats[rebIdx] : '0',
         stl: stlIdx >= 0 ? stats[stlIdx] : '0',
         blk: blkIdx >= 0 ? stats[blkIdx] : '0',
+        fg: fgIdx >= 0 ? stats[fgIdx] : '0',
+        threept: threeptIdx >= 0 ? stats[threeptIdx] : '0',
+        ft: ftIdx >= 0 ? stats[ftIdx] : '0',
       });
     }
   }
@@ -437,23 +451,31 @@ export default function NbaToday() {
                 <table className="stats-table">
                   <thead>
                     <tr className="stats-table-head">
-                      <th className="stats-th-player rounded-l-lg">Player</th>
-                      <th className="stats-th">PTS</th>
-                      <th className="stats-th">AST</th>
-                      <th className="stats-th">REB</th>
-                      <th className="stats-th">STL</th>
-                      <th className="stats-th rounded-r-lg">BLK</th>
-                    </tr>
+                        <th className="stats-th-player rounded-l-lg">Player</th>
+                        <th className="stats-th">MIN</th>
+                        <th className="stats-th">PTS</th>
+                        <th className="stats-th">AST</th>
+                        <th className="stats-th">REB</th>
+                        <th className="stats-th">STL</th>
+                        <th className="stats-th">BLK</th>
+                        <th className="stats-th">FG</th>
+                        <th className="stats-th">3PT</th>
+                        <th className="stats-th rounded-r-lg">FT</th>
+                      </tr>
                   </thead>
                   <tbody>
                     {filteredStats.map((p, i) => (
                       <tr key={i} className="stats-row">
                         <td className="stats-td-player">{p.name}</td>
+                        <td className="stats-td">{p.min}</td>
                         <td className="stats-td-pts">{p.pts}</td>
                         <td className="stats-td">{p.ast}</td>
                         <td className="stats-td">{p.reb}</td>
                         <td className="stats-td">{p.stl}</td>
                         <td className="stats-td">{p.blk}</td>
+                        <td className="stats-td px-0 lg:px-3">{p.fg}</td>
+                        <td className="stats-td px-0 lg:px-3">{p.threept}</td>
+                        <td className="stats-td px-0 lg:px-3">{p.ft}</td>
                       </tr>
                     ))}
                   </tbody>

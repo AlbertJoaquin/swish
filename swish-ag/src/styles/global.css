@@ -115,10 +115,10 @@ html {
   }
 
   .container-landing {
-    @apply flex flex-col justify-center items-center mx-auto max-w-300 mt-3;
+    @apply flex flex-col justify-center items-center mx-auto max-w-300 mt-8;
+    @apply lg:mt-20;
 
     min-height: 100vh;
-    padding-top: clamp(5rem, 7vh, 10rem);
     padding-bottom: clamp(2rem, 5vh, 4rem);
 
     background-image: linear-gradient(
@@ -127,7 +127,7 @@ html {
       #e03a3e,
       transparent
     );
-    background-position: center calc(100% - 80px);
+    background-position: center calc(100% - 110px);
     background-size: 100% 2px;
     background-repeat: no-repeat;
   }
@@ -619,11 +619,20 @@ html {
 
   .stats-table-wrapper {
     @apply overflow-x-auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  @media (max-width: 767px) {
+    .stats-table {
+      @apply w-full font-mono;
+      font-size: clamp(0.75rem, 1.5vw + 0.75rem, 1.1rem);
+      min-width: 600px; /* forces horizontal scroll */
+    }
   }
 
   .stats-table {
     @apply w-full font-mono;
-    font-size: clamp(0.75rem, 1.5vw + 0.75rem, 1.1rem);
+    font-size: clamp(0.5rem, 1.5vw + 0.75rem, 1.1rem);
   }
 
   .stats-table-head tr {
@@ -633,12 +642,14 @@ html {
   }
 
   .stats-th-player {
-    @apply text-left py-2 pl-2 bg-[#1e1e1e] text-[#009900] font-sans tracking-widest;
+    @apply text-left py-2 pl-2 bg-[#1e1e1e] text-[#009900] tracking-normal;
+    position: sticky;
+    left: 0;
+    z-index: 1;
   }
 
   .stats-th {
-    @apply py-2 px-2 text-center bg-[#1e1e1e] text-[#009900] font-sans tracking-widest;
-    font-size: clamp(0.75rem, 1.5vw + 0.75rem, 1.1rem);
+    @apply py-2 px-3 text-center bg-[#1e1e1e] text-[#009900];
   }
 
   .stats-row {
@@ -646,12 +657,15 @@ html {
   }
 
   .stats-td-player {
-    @apply py-2 pr-4 text-[#cccccc] tracking-wider;
+    @apply py-2 pr-2 text-[#cccccc] tracking-wider bg-[#121212];
+    position: sticky;
+    left: 0;
+    z-index: 1;
   }
 
   .stats-td-pts {
     @apply py-2 px-2 text-center font-medium;
-    color: #db6163;
+    color: #e63946;
   }
 
   .stats-td {
