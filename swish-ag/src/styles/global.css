@@ -337,7 +337,7 @@ html {
 
   @layer components {
     .news-section {
-      @apply relative overflow-hidden pt-10 min-h-160  bg-[#121212];
+      @apply relative overflow-hidden pt-10 min-h-160  bg-zinc-900;
       @apply lg:py-10;
       scroll-margin-top: var(--navbar-height);
     }
@@ -688,7 +688,7 @@ html {
   }
 
   .about {
-    @apply z-10 relative overflow-hidden bg-[#121212];
+    @apply z-10 relative overflow-hidden  bg-zinc-900;
     scroll-margin-top: var(--navbar-height);
   }
 
@@ -799,7 +799,7 @@ html {
   }
 
   .contact {
-    @apply bg-zinc-900 z-10 relative;
+    @apply bg-[#121212] z-10 relative;
     scroll-margin-top: var(--navbar-height);
   }
 
