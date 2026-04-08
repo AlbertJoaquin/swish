@@ -98,15 +98,6 @@ function getStatusInfo(game: Game) {
   return { label: detail, cls: 'nba-upcoming' };
 }
 
-function allGamesDone(games: Game[]): boolean {
-  if (games.length === 0) return false;
-  return games.every(g =>
-    g.status === 'STATUS_FINAL' ||
-    g.status === 'STATUS_FULL_TIME' ||
-    g.status === 'STATUS_FINAL_OT'
-  );
-}
-
 async function fetchPlayerStats(gameId: string): Promise<PlayerStat[]> {
   const res = await fetch(
     `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=${gameId}`
@@ -118,9 +109,7 @@ async function fetchPlayerStats(gameId: string): Promise<PlayerStat[]> {
     const teamAbbr = teamData?.team?.abbreviation || '';
     const statistics = teamData?.statistics?.[0];
     if (!statistics) continue;
-
     const labels: string[] = statistics.labels || [];
-
     const minIdx = labels.indexOf('MIN');
     const ptsIdx = labels.indexOf('PTS');
     const astIdx = labels.indexOf('AST');
@@ -133,8 +122,8 @@ async function fetchPlayerStats(gameId: string): Promise<PlayerStat[]> {
     for (const athlete of statistics.athletes || []) {
       const stats = athlete.stats || [];
       if (!stats.length) continue;
-    players.push({
-  name: athlete.athlete?.displayName || '',
+      players.push({
+        name: athlete.athlete?.displayName || '',
         team: teamAbbr,
         min: minIdx >= 0 ? stats[minIdx] : '0',
         pts: ptsIdx >= 0 ? stats[ptsIdx] : '0',
@@ -151,6 +140,20 @@ async function fetchPlayerStats(gameId: string): Promise<PlayerStat[]> {
   return players.sort((a, b) => parseFloat(b.pts) - parseFloat(a.pts));
 }
 
+async function fetchSingleGame(gameId: string, dateStr: string): Promise<Game | null> {
+  try {
+    const res = await fetch(
+      `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=${dateStr}`
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const games = parseGames(data);
+    return games.find(g => g.id === gameId) || null;
+  } catch {
+    return null;
+  }
+}
+
 export default function NbaToday() {
   const [yesterdayGames, setYesterdayGames] = useState<Game[]>([]);
   const [todayGames, setTodayGames] = useState<Game[]>([]);
@@ -160,8 +163,17 @@ export default function NbaToday() {
   const [cooldown, setCooldown] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [dayOffset, setDayOffset] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
+
   const swiperRef = useRef<any>(null);
   const autoRefreshRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const activeIndexRef = useRef(0);
+  const dayOffsetRef = useRef(0);
+  const gamesRef = useRef<{ yesterday: Game[]; today: Game[]; tomorrow: Game[] }>({
+    yesterday: [],
+    today: [],
+    tomorrow: [],
+  });
 
   const [statsOpen, setStatsOpen] = useState(false);
   const [statsGame, setStatsGame] = useState<Game | null>(null);
@@ -169,17 +181,26 @@ export default function NbaToday() {
   const [statsLoading, setStatsLoading] = useState(false);
   const [statsTab, setStatsTab] = useState<string>('');
 
-  // lock scroll when stats panel is open
+  // Keep refs in sync
+  useEffect(() => { activeIndexRef.current = activeIndex; }, [activeIndex]);
+  useEffect(() => { dayOffsetRef.current = dayOffset; }, [dayOffset]);
+  useEffect(() => { gamesRef.current.yesterday = yesterdayGames; }, [yesterdayGames]);
+  useEffect(() => { gamesRef.current.today = todayGames; }, [todayGames]);
+  useEffect(() => { gamesRef.current.tomorrow = tomorrowGames; }, [tomorrowGames]);
+
+  // Lock scroll when stats panel is open
   useEffect(() => {
-    if (statsOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
+    document.body.style.overflow = statsOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
   }, [statsOpen]);
+
+  const updateGameInState = (updatedGame: Game, offset: number) => {
+    const setter =
+      offset === -1 ? setYesterdayGames :
+      offset === 0 ? setTodayGames :
+      setTomorrowGames;
+    setter(prev => prev.map(g => g.id === updatedGame.id ? updatedGame : g));
+  };
 
   const openStats = async (game: Game) => {
     setStatsGame(game);
@@ -203,10 +224,20 @@ export default function NbaToday() {
     setStatsData([]);
   };
 
-  const slideToLive = (games: Game[]) => {
+  // On first load only: slide to live game
+  const slideToLiveOnce = (games: Game[]) => {
     if (!swiperRef.current) return;
     const liveIndex = games.findIndex(g => g.status === 'STATUS_IN_PROGRESS');
-    if (liveIndex !== -1) swiperRef.current.slideTo(liveIndex);
+    if (liveIndex !== -1) {
+      swiperRef.current.slideTo(liveIndex);
+      setActiveIndex(liveIndex);
+    }
+  };
+
+  // After refresh: restore the user's current slide position
+  const restoreSlide = (index: number) => {
+    if (!swiperRef.current) return;
+    setTimeout(() => swiperRef.current?.slideTo(index, 0), 100);
   };
 
   const stopAutoRefresh = () => {
@@ -216,13 +247,37 @@ export default function NbaToday() {
     }
   };
 
-  const startAutoRefresh = () => {
+  // Smart per-game auto refresh: only fetches the active game if it's live
+  const startSmartAutoRefresh = () => {
     stopAutoRefresh();
-    autoRefreshRef.current = setInterval(() => fetchGames(true), 30 * 1000);
+    autoRefreshRef.current = setInterval(async () => {
+      const offset = dayOffsetRef.current;
+      const idx = activeIndexRef.current;
+      const games =
+        offset === -1 ? gamesRef.current.yesterday :
+        offset === 0 ? gamesRef.current.today :
+        gamesRef.current.tomorrow;
+
+      const activeGame = games[idx];
+      if (!activeGame || activeGame.status !== 'STATUS_IN_PROGRESS') return;
+
+      const dateStr = getDateStrForTab(offset);
+      const updated = await fetchSingleGame(activeGame.id, dateStr);
+      if (updated) {
+        updateGameInState(updated, offset);
+        // Restore slide position after state update
+        setTimeout(() => restoreSlide(idx), 50);
+      }
+    }, 30 * 1000);
   };
 
   const fetchGames = async (isAuto = false) => {
     if (!isAuto && cooldown) return;
+
+    // Remember where the user is before refreshing
+    const savedIndex = activeIndexRef.current;
+    const savedOffset = dayOffsetRef.current;
+
     if (!isAuto) {
       setCooldown(true);
       setSeconds(60);
@@ -233,10 +288,11 @@ export default function NbaToday() {
         });
       }, 1000);
     }
+
     setLoading(true);
     setError('');
     try {
-      const [yesterdayRes, todayRes, tomorrowRes] = await Promise.all([
+      const [yRes, tRes, tmRes] = await Promise.all([
         fetch(`https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=${getDateStrForTab(-1)}`),
         fetch(`https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=${getDateStrForTab(0)}`),
         fetch(`https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=${getDateStrForTab(1)}`),
@@ -245,18 +301,23 @@ export default function NbaToday() {
         if (!res.ok) throw new Error(`API error: ${res.status}`);
         return res.json();
       };
-      const [yesterdayData, todayData, tomorrowData] = await Promise.all([
-        checkRes(yesterdayRes),
-        checkRes(todayRes),
-        checkRes(tomorrowRes),
+      const [yData, tData, tmData] = await Promise.all([
+        checkRes(yRes), checkRes(tRes), checkRes(tmRes),
       ]);
-      const parsedToday = parseGames(todayData);
-      setYesterdayGames(parseGames(yesterdayData));
+      const parsedToday = parseGames(tData);
+      setYesterdayGames(parseGames(yData));
       setTodayGames(parsedToday);
-      setTomorrowGames(parseGames(tomorrowData));
-      if (dayOffset === 0) setTimeout(() => slideToLive(parsedToday), 100);
-      if (allGamesDone(parsedToday)) stopAutoRefresh();
-      else if (!autoRefreshRef.current) startAutoRefresh();
+      setTomorrowGames(parseGames(tmData));
+
+      if (isAuto) {
+        // First ever load: go to live game if on today tab
+        if (savedOffset === 0) {
+          setTimeout(() => slideToLiveOnce(parsedToday), 100);
+        }
+      } else {
+        // Manual refresh: go back to where user was
+        setTimeout(() => restoreSlide(savedIndex), 100);
+      }
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -266,21 +327,26 @@ export default function NbaToday() {
 
   useEffect(() => {
     fetchGames(true);
-    startAutoRefresh();
+    startSmartAutoRefresh();
     return () => stopAutoRefresh();
   }, []);
 
+  // Restart smart refresh whenever the user swipes or changes day tab
   useEffect(() => {
-    if (dayOffset === 0) setTimeout(() => slideToLive(todayGames), 100);
-  }, [dayOffset]);
+    startSmartAutoRefresh();
+  }, [activeIndex, dayOffset]);
 
   const displayGames =
     dayOffset === -1 ? yesterdayGames :
-    dayOffset === 0 ? todayGames : tomorrowGames;
+    dayOffset === 0 ? todayGames :
+    tomorrowGames;
 
   const noGamesLabel =
     dayOffset === -1 ? 'yesterday' :
     dayOffset === 0 ? 'today' : 'tomorrow';
+
+  const activeGame = displayGames[activeIndex];
+  const activeGameIsLive = activeGame?.status === 'STATUS_IN_PROGRESS';
 
   const filteredStats = statsData.filter(p => p.team === statsTab);
 
@@ -310,19 +376,27 @@ export default function NbaToday() {
           </div>
         </div>
 
-        <button
-          className="nba-refresh"
-          onClick={() => fetchGames(false)}
-          disabled={cooldown}
-          title={cooldown ? `Wait ${seconds}s` : 'Refresh'}
-        >
-          <FontAwesomeIcon
-            icon={faArrowsRotate}
-            style={{ fontSize: 'clamp(0.8rem, 1vw + 0.5rem, 0.9rem)' }}
-            className={cooldown ? 'opacity-30' : ''}
-          />
-          {cooldown && <span className="ml-1 text-xs text-[#8892a4]">{seconds}s</span>}
-        </button>
+        <div className="flex items-center gap-2">
+          {activeGameIsLive && (
+            <div className="flex items-center gap-1" title="Auto-refreshing this game every 30s">
+              <span className="animate-ping [animation-duration:2s] inline-flex w-2 h-2 rounded-full bg-[#22c55e] opacity-75" />
+              <span className="text-xs text-[#22c55e] hidden sm:inline">Tracking</span>
+            </div>
+          )}
+          <button
+            className="nba-refresh"
+            onClick={() => fetchGames(false)}
+            disabled={cooldown}
+            title={cooldown ? `Wait ${seconds}s` : 'Refresh all games'}
+          >
+            <FontAwesomeIcon
+              icon={faArrowsRotate}
+              style={{ fontSize: 'clamp(0.8rem, 1vw + 0.5rem, 0.9rem)' }}
+              className={cooldown ? 'opacity-30' : ''}
+            />
+            {cooldown && <span className="ml-1 text-xs text-[#8892a4]">{seconds}s</span>}
+          </button>
+        </div>
       </div>
 
       {loading && (
@@ -346,12 +420,14 @@ export default function NbaToday() {
           modules={[EffectCoverflow, Pagination]}
           className="nba-swiper"
           onSwiper={(swiper) => { swiperRef.current = swiper; }}
+          onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
         >
-          {displayGames.map((g) => {
+          {displayGames.map((g, idx) => {
             const { label, cls } = getStatusInfo(g);
             const isUpcoming = g.status === 'STATUS_SCHEDULED';
             const isLive = g.status === 'STATUS_IN_PROGRESS';
             const canShowStats = g.status !== 'STATUS_SCHEDULED';
+            const isActiveSlide = idx === activeIndex;
             return (
               <SwiperSlide key={g.id} className="nba-slide">
                 <div className={`nba-card ${isLive ? 'ring-1 ring-[#e63946]' : ''}`}>
@@ -388,15 +464,12 @@ export default function NbaToday() {
 
                     {canShowStats && (
                       <button onClick={() => openStats(g)} className="stats-btn">
-                        Stats - 
+                        Stats -
                         <span>
-                         <FontAwesomeIcon
-                          icon={faBoltLightning}
-                          style={{ fontSize: 'clamp(0.8rem, 1vw + 0.5rem, 0.9rem)',
-                             color: '#fffb03'
-                           }}
-                          className={cooldown ? 'opacity-30' : ''}
-                        />
+                          <FontAwesomeIcon
+                            icon={faBoltLightning}
+                            style={{ fontSize: 'clamp(0.8rem, 1vw + 0.5rem, 0.9rem)', color: '#fffb03' }}
+                          />
                         </span>
                       </button>
                     )}
@@ -408,7 +481,6 @@ export default function NbaToday() {
         </Swiper>
       )}
 
-      {/* Stats slide up panel */}
       {statsOpen && (
         <>
           <div className="stats-backdrop" onClick={closeStats} />
@@ -451,17 +523,17 @@ export default function NbaToday() {
                 <table className="stats-table">
                   <thead>
                     <tr className="stats-table-head">
-                        <th className="stats-th-player rounded-l-lg">Player</th>
-                        <th className="stats-th">MIN</th>
-                        <th className="stats-th">PTS</th>
-                        <th className="stats-th">AST</th>
-                        <th className="stats-th">REB</th>
-                        <th className="stats-th">STL</th>
-                        <th className="stats-th">BLK</th>
-                        <th className="stats-th">FG</th>
-                        <th className="stats-th">3PT</th>
-                        <th className="stats-th rounded-r-lg">FT</th>
-                      </tr>
+                      <th className="stats-th-player rounded-l-lg">Player</th>
+                      <th className="stats-th">MIN</th>
+                      <th className="stats-th">PTS</th>
+                      <th className="stats-th">AST</th>
+                      <th className="stats-th">REB</th>
+                      <th className="stats-th">STL</th>
+                      <th className="stats-th">BLK</th>
+                      <th className="stats-th">FG</th>
+                      <th className="stats-th">3PT</th>
+                      <th className="stats-th rounded-r-lg">FT</th>
+                    </tr>
                   </thead>
                   <tbody>
                     {filteredStats.map((p, i) => (
