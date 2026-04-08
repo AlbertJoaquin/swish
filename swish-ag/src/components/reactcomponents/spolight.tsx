@@ -5,7 +5,7 @@ const SwishSpotlight = () => {
     return (
         <section className="spotlight" id="spotlight">
             <div className="spotlight-container">
-                <NbaToday/>         
+                <NbaToday/>     
             </div>
         </section>
     )

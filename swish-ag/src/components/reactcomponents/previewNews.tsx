@@ -96,6 +96,7 @@ const SwishNews = () => {
     });
   };
 
+
   return (
     <section className="news-section" id="news">
       <div className="news-container">
