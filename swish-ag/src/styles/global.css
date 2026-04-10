@@ -850,7 +850,14 @@ html {
 
   .textarea-contact {
     @apply w-full h-full resize-none box-border px-2 pt-2 mb-5 bg-white tracking-wide font-display;
-    font-size: clamp(0.75rem, 1.5vw + 0.75rem, 1.1rem);
+  }
+
+  .submission::placeholder {
+    font-size: clamp(
+      0.75rem,
+      1.5vw + 0.75rem,
+      1.1rem
+    ); /* adjust to your liking */
   }
 
   .contact-btn {
